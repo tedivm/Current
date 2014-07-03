@@ -73,6 +73,11 @@ class Version
         return $this->prerelease[$offset];
     }
 
+    public function isStable()
+    {
+        return $this->stable;
+    }
+
     public static function compare($a, $b)
     {
         // $a > $b = 1
