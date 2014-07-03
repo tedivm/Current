@@ -73,7 +73,7 @@ class Version
         return $this->prerelease[$offset];
     }
 
-    public static function compare(Version $a, Version $b)
+    public static function compare($a, $b)
     {
         // $a > $b = 1
         // $a == $b = 0
@@ -100,10 +100,9 @@ class Version
         }
 
         $i = 0;
-        do {
-
+        do{
             $metaA = $a->getPrerelease($i);
-            $metaB = $a->getPrerelease($i);
+            $metaB = $b->getPrerelease($i);
 
             if (($metaA && $metaB) === false) {
 
@@ -126,6 +125,7 @@ class Version
             }
 
             // Both are equal and neither are false, so we move on to the next piece.
+
             if ($metaA == $metaB) {
                 continue;
             }
@@ -155,10 +155,8 @@ class Version
 
             // This side never gets reached.
 
-        } while ($i++);
+        }while (++$i);
     }
-
-
 
     public function getLongString()
     {
@@ -190,7 +188,7 @@ class Version
             $version .= '.' . $patch;
         }
 
-        if (count($this->meta)) {
+        if (count($this->prerelease) > 0) {
             $version .= '-' . implode('.', $this->meta);
         }
 
