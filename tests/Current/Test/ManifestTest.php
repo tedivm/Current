@@ -90,7 +90,6 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         $lastVersionString = $lastVersion->getLongString();
         $this->assertEquals('v2.2.12', $lastVersionString);
 
-
         $lastVersionOne = $manifest->getLatestVersion(1);
 
         $this->assertInstanceOf('Current\\Version', $lastVersionOne);
@@ -100,7 +99,6 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($manifest->getLatestVersion(3));
 
     }
-
 
     public function testGetReleaseFromVersion()
     {

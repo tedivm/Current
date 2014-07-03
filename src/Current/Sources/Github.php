@@ -40,11 +40,27 @@ class Github
             $updateVersion['stable'] = !$release['draft'] && !$release['prerelease'];
 
             foreach ($release['assets'] as $asset) {
-                $assetArray = array();
-                $assetArray['name'] = $asset['name'];
-                $assetArray['path'] = $projectUrl . 'releases/download/' . $release['tag_name'] . '/' . $asset['name'];
+                $updateVersion['assets'][] = array(
+                    'name' => $asset['name'],
+                    'path' => $projectUrl . 'releases/download/' . $release['tag_name'] . '/' . $asset['name'],
+                    'source' => false
+                );
+            }
 
-                $updateVersion['assets'][] = $asset;
+            if (isset($release['tarball_url'])) {
+                $updateVersion['assets'][] = array(
+                    'name' => $release['tag_name'] . '.tar.gz',
+                    'path' => $projectUrl . 'archive/' . $release['tag_name'] . '.tar.gz',
+                    'source' => true
+                );
+            }
+
+            if (isset($release['zipball_url'])) {
+                $updateVersion['assets'][] = array(
+                    'name' => $release['tag_name'] . '.zip',
+                    'path' => $projectUrl . 'archive/' . $release['tag_name'] . '.zip',
+                    'source' => true
+                );
             }
 
             $manifest[] = $updateVersion;
