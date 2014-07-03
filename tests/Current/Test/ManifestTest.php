@@ -90,19 +90,15 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         $lastVersionString = $lastVersion->getLongString();
         $this->assertEquals('v2.2.12', $lastVersionString);
 
-
         $lastVersionOne = $manifest->getLatestVersion(1);
         $this->assertInstanceOf('Current\Version', $lastVersionOne);
         $lastVersionOneString = $lastVersionOne->getLongString();
         $this->assertEquals('v1.4.10', $lastVersionOneString);
 
-
         $lastVersionOne = $manifest->getLatestVersion(1, 3);
         $this->assertInstanceOf('Current\Version', $lastVersionOne);
         $lastVersionOneString = $lastVersionOne->getLongString();
         $this->assertEquals('v1.3.10', $lastVersionOneString);
-
-
 
         $this->assertFalse($manifest->getLatestVersion(3));
 

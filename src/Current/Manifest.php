@@ -6,32 +6,13 @@ use Current\Interfaces\Source;
 
 class Manifest
 {
-    protected static $sources = array('https://github.com/' => 'Github');
-    protected static $defaultSource = '';
-
     protected $source;
 
     protected $releases = array();
     protected $versions = array();
 
-    protected $latests = array();
-
-    public static function buildFromUrl($url)
-    {
-        $className = static::$defaultSource;
-        foreach (self::$sources as $sourceUrl => $sourceClass) {
-            if (substr($url, 0, strlen($sourceUrl)) == $sourceUrl) {
-                $className = 'Current\\Sources\\' . $sourceClass;
-                break;
-            }
-        }
-
-        /** @var Source $source */
-        $source = new $className();
-        $source->initialize($url);
-
-        return new self($source);
-    }
+    protected $latestStable = array();
+    protected $latestDevelopment = array();
 
     public function __construct(Source $source)
     {
@@ -48,18 +29,23 @@ class Manifest
 
         /** @var Version $versionObject */
         foreach ($this->versions as $versionObject) {
-            $versionObject->getMajor();
-            $this->latests[$versionObject->getMajor()][$versionObject->getMinor()] = $versionObject;
-        }
 
+            $major = $versionObject->getMajor();
+            $minor = $versionObject->getMinor();
+            if ($versionObject->isStable()) {
+                $this->latestStable[$major][$minor] = $versionObject;
+            } else {
+                $this->latestDevelopment[$major][$minor] = $versionObject;
+            }
+        }
     }
 
     public function getLatestVersion($macro = null, $minor = null)
     {
         if (!isset($macro)) {
-            $latestMacro = end($this->latests);
-        } elseif (isset($this->latests[$macro])) {
-            $latestMacro = $this->latests[$macro];
+            $latestMacro = end($this->latestStable);
+        } elseif (isset($this->latestStable[$macro])) {
+            $latestMacro = $this->latestStable[$macro];
         } else {
             return false;
         }
@@ -77,5 +63,4 @@ class Manifest
     {
         return $this->releases[$version->getLongString()];
     }
-
 }
