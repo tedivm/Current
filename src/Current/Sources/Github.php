@@ -42,7 +42,7 @@ class Github
             foreach ($release['assets'] as $asset) {
                 $assetArray = array();
                 $assetArray['name'] = $asset['name'];
-                $assetArray['url'] = $projectUrl . 'releases/download/' . $release['tag_name'] . '/' . $asset['name'];
+                $assetArray['path'] = $projectUrl . 'releases/download/' . $release['tag_name'] . '/' . $asset['name'];
 
                 $updateVersion['assets'][] = $asset;
             }

@@ -100,7 +100,7 @@ class Version
         }
 
         $i = 0;
-        do{
+        do {
             $metaA = $a->getPrerelease($i);
             $metaB = $b->getPrerelease($i);
 
@@ -155,7 +155,7 @@ class Version
 
             // This side never gets reached.
 
-        }while (++$i);
+        } while (++$i);
     }
 
     public function getLongString()

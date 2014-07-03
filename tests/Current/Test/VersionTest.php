@@ -31,7 +31,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase
     {
         $testVersions = $this->sortedVersionList;
         $num = count($this->sortedVersionList) - 1;
-        for($i = 0; $i < $num; $i++) {
+        for ($i = 0; $i < $num; $i++) {
 
             $a = $testVersions[$i];
             $b = $testVersions[$i+1];
@@ -52,17 +52,15 @@ class VersionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, Version::compare($a, $b), $a . ' == ' . $b);
     }
 
-
-    public function testGetLongString() {
+    public function testGetLongString()
+    {
         $versionString = 'v1.0.0-alpha.4+5678';
 
         $a = new Version($versionString);
 
         $this->assertEquals($versionString, $a->getLongString());
 
-
         $this->assertEquals('v1-alpha.4', $a->getShortString());
-
 
         $a = new Version('v1.1.0-alpha+cheeeesey');
         $this->assertEquals('v1.1-alpha', $a->getShortString());

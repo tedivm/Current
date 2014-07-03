@@ -51,17 +51,20 @@ class Manifest
             $versionObject->getMajor();
             $this->latests[$versionObject->getMajor()] = $versionObject;
         }
+
     }
 
     public function getLatestVersion($macro = null)
     {
-        if (isset($macro)) {
-            $macroGroup = $this->latests[$macro];
-        } else {
-            $macroGroup = end($this->latests);
+        if (!isset($macro)) {
+            return end($this->latests);
         }
 
-        return end($macroGroup);
+        if (isset($this->latests[$macro])) {
+            return $this->latests[$macro];
+        } else {
+            return false;
+        }
     }
 
     public function getReleaseFromVersion(Version $version)
