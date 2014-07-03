@@ -160,7 +160,7 @@ class Version
 
     public function getLongString()
     {
-        $version = $this->getMajor() . '.' . $this->getMinor() . '.' . $this->getPatch();
+        $version = 'v' . $this->getMajor() . '.' . $this->getMinor() . '.' . $this->getPatch();
 
         if (count($this->prerelease)) {
             $version .= '-' . implode('.', $this->prerelease);
@@ -175,7 +175,7 @@ class Version
 
     public function getShortString()
     {
-        $version = $this->getMajor();
+        $version = 'v' . $this->getMajor();
 
         $minor = $this->getMinor();
         $patch = $this->getPatch();
@@ -189,7 +189,7 @@ class Version
         }
 
         if (count($this->prerelease) > 0) {
-            $version .= '-' . implode('.', $this->meta);
+            $version .= '-' . implode('.', $this->prerelease);
         }
 
         return $version;
