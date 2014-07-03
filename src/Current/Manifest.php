@@ -49,19 +49,25 @@ class Manifest
         /** @var Version $versionObject */
         foreach ($this->versions as $versionObject) {
             $versionObject->getMajor();
-            $this->latests[$versionObject->getMajor()] = $versionObject;
+            $this->latests[$versionObject->getMajor()][$versionObject->getMinor()] = $versionObject;
         }
 
     }
 
-    public function getLatestVersion($macro = null)
+    public function getLatestVersion($macro = null, $minor = null)
     {
         if (!isset($macro)) {
-            return end($this->latests);
+            $latestMacro = end($this->latests);
+        } elseif (isset($this->latests[$macro])) {
+            $latestMacro = $this->latests[$macro];
+        } else {
+            return false;
         }
 
-        if (isset($this->latests[$macro])) {
-            return $this->latests[$macro];
+        if (!isset($minor)) {
+            return end($latestMacro);
+        } elseif (isset($latestMacro[$minor])) {
+            return $latestMacro[$minor];
         } else {
             return false;
         }

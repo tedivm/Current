@@ -74,10 +74,10 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
             ->method('getReleases')
             ->will($this->returnValue($this->testManifest));
 
-        $manfest = new Manifest($stub);
-        $this->assertInstanceOf('Current\Manifest', $manfest);
+        $manifest = new Manifest($stub);
+        $this->assertInstanceOf('Current\Manifest', $manifest);
 
-        return $manfest;
+        return $manifest;
     }
 
     public function testGetLatestRelease()
@@ -86,15 +86,23 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
 
         $lastVersion = $manifest->getLatestVersion();
 
-        $this->assertInstanceOf('Current\\Version', $lastVersion);
+        $this->assertInstanceOf('Current\Version', $lastVersion);
         $lastVersionString = $lastVersion->getLongString();
         $this->assertEquals('v2.2.12', $lastVersionString);
 
-        $lastVersionOne = $manifest->getLatestVersion(1);
 
-        $this->assertInstanceOf('Current\\Version', $lastVersionOne);
+        $lastVersionOne = $manifest->getLatestVersion(1);
+        $this->assertInstanceOf('Current\Version', $lastVersionOne);
         $lastVersionOneString = $lastVersionOne->getLongString();
         $this->assertEquals('v1.4.10', $lastVersionOneString);
+
+
+        $lastVersionOne = $manifest->getLatestVersion(1, 3);
+        $this->assertInstanceOf('Current\Version', $lastVersionOne);
+        $lastVersionOneString = $lastVersionOne->getLongString();
+        $this->assertEquals('v1.3.10', $lastVersionOneString);
+
+
 
         $this->assertFalse($manifest->getLatestVersion(3));
 
