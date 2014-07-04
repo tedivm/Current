@@ -92,7 +92,7 @@ class Version
             $b = new Version($b);
         }
 
-        if (($amajor = $a->getMajor()) !== $b->getMajor()) {
+        if (($a->getMajor()) !== $b->getMajor()) {
             return $a->getMajor() > $b->getMajor() ? 1 : -1;
         }
 

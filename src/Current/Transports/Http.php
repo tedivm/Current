@@ -35,13 +35,13 @@ class Http implements Transport
     {
         $filename = $file;
 
-        $dest = new SplFileObject($filename, 'wb', false);
+        $destination = new SplFileObject($filename, 'wb', false);
         $sourceHandle = fopen($this->path, "rb");
 
         while (!feof($sourceHandle)) {
-            $dest->fwrite(fread($sourceHandle, 8192));
+            $destination->fwrite(fread($sourceHandle, 8192));
             if (isset($progressCallback)) {
-                $progress->setFileProgress($dest->ftell(), $this->size);
+                $progress->setFileProgress($destination->ftell(), $this->size);
             }
         }
         $progress->setFileComplete();
