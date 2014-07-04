@@ -1,6 +1,6 @@
 <?php
 
-namespace Current;
+namespace Current\Transports;
 
 use Current\Interfaces\Progress;
 use Current\Interfaces\Transport;
