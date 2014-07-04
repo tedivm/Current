@@ -2,7 +2,7 @@
 
 namespace Current\Sources;
 
-use Current\Http;
+use Current\Transports\Http;
 
 class Github
 {
