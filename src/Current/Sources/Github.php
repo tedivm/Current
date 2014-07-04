@@ -2,6 +2,8 @@
 
 namespace Current\Sources;
 
+use Current\Http;
+
 class Github
 {
     protected $vendor;
@@ -40,9 +42,20 @@ class Github
             $updateVersion['stable'] = !$release['draft'] && !$release['prerelease'];
 
             foreach ($release['assets'] as $asset) {
+
+                $dotPos = strpos($asset['name'], '.');
+
+                if ($dotPos !== false) {
+                    $type = substr($asset['name'], $dotPos);
+                } else {
+                    $type = $asset['name'];
+                }
+
                 $updateVersion['assets'][] = array(
                     'name' => $asset['name'],
                     'path' => $projectUrl . 'releases/download/' . $release['tag_name'] . '/' . $asset['name'],
+                    'type' => $type,
+                    'size' => $asset['size'],
                     'source' => false
                 );
             }
@@ -51,6 +64,7 @@ class Github
                 $updateVersion['assets'][] = array(
                     'name' => $release['tag_name'] . '.tar.gz',
                     'path' => $projectUrl . 'archive/' . $release['tag_name'] . '.tar.gz',
+                    'type' => '.tar.gz',
                     'source' => true
                 );
             }
@@ -59,6 +73,7 @@ class Github
                 $updateVersion['assets'][] = array(
                     'name' => $release['tag_name'] . '.zip',
                     'path' => $projectUrl . 'archive/' . $release['tag_name'] . '.zip',
+                    'type' => '.zip',
                     'source' => true
                 );
             }
@@ -67,6 +82,11 @@ class Github
         }
 
         return $manifest;
+    }
+
+    public function getTransport($asset)
+    {
+        return new Http($asset);
     }
 
     protected function getProjectUrl($api = false)
