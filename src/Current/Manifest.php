@@ -40,27 +40,88 @@ class Manifest
         }
     }
 
-    public function getLatestVersion($macro = null, $minor = null)
+    public function getLatestVersion($stable = true, $major = null, $minor = null)
     {
-        if (!isset($macro)) {
-            $latestMacro = end($this->latestStable);
-        } elseif (isset($this->latestStable[$macro])) {
-            $latestMacro = $this->latestStable[$macro];
-        } else {
-            return false;
+        $stableVersion = $this->getLatestVersionByType(true, $major, $minor);
+
+        if ($stable === true) {
+            return $stableVersion;
         }
 
-        if (!isset($minor)) {
-            return end($latestMacro);
-        } elseif (isset($latestMacro[$minor])) {
-            return $latestMacro[$minor];
+        $developmentVersion = $this->getLatestVersionByType(false, $major, $minor);
+
+        if ($stableVersion === false) {
+            return $developmentVersion;
+        }
+
+        if ($developmentVersion === false) {
+            return $stableVersion;
+        }
+
+        if (Version::compare($stableVersion, $developmentVersion)) {
+            return $stableVersion;
         } else {
-            return false;
+            return $developmentVersion;
         }
     }
 
     public function getReleaseFromVersion(Version $version)
     {
-        return $this->releases[$version->getLongString()];
+        if (!isset($this->releases[$version->getLongString()])) {
+            return false;
+        }
+
+        return new Release($this->releases[$version->getLongString()], $this->source);
+    }
+
+    public function getAvailableUpdates($version = null)
+    {
+        $availableUpdates = 0;
+
+        if (!($version instanceof Version)) {
+            $version = new Version($version);
+        }
+
+        if (!isset($version)) {
+            return Update::MAJOR;
+        }
+
+        $latest = $this->getLatestVersion(true)->getMajor();
+        if (Version::compare($latest, $version)) {
+            $availableUpdates = $availableUpdates & Update::MAJOR;
+        }
+
+        $macro = $this->getReleaseFromVersion(true, $version->getMajor());
+        if (Version::compare($macro, $version)) {
+            $availableUpdates = $availableUpdates & Update::MINOR;
+        }
+
+        $micro = $this->getReleaseFromVersion(true, $version->getMajor(), $version->getMinor());
+        if (Version::compare($micro, $version)) {
+            $availableUpdates = $availableUpdates & Update::PATCH;
+        }
+
+        return $availableUpdates;
+    }
+
+    protected function getLatestVersionByType($stable = true, $major = null, $minor = null)
+    {
+        $versionProperty = $stable === true ? 'latestStable' : 'latestDevelopment';
+
+        if (!isset($major)) {
+            $latestMajor = end($this->$versionProperty);
+        } elseif (isset($this->{$versionProperty}[$major])) {
+            $latestMajor = $this->{$versionProperty}[$major];
+        } else {
+            return false;
+        }
+
+        if (!isset($minor)) {
+            return end($latestMajor);
+        } elseif (isset($latestMajor[$minor])) {
+            return $latestMajor[$minor];
+        } else {
+            return false;
+        }
     }
 }
