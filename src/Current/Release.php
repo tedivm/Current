@@ -17,7 +17,7 @@ class Release
         $this->config = $config;
         $this->source = $source;
 
-        foreach($config['assets'] as $asset) {
+        foreach ($config['assets'] as $asset) {
             $this->assets[$asset['type']] = $asset;
         }
 
@@ -26,6 +26,11 @@ class Release
     public function isStable()
     {
         return (bool) $this->config['stable'];
+    }
+
+    public function getVersion()
+    {
+        return new Version($this->config['version']);
     }
 
     public function hasType($type = 'phar')
@@ -51,14 +56,13 @@ class Release
         }
     }
 
-
     /**
-     * @param string $type
+     * @param  string         $type
      * @return Transport|bool
      */
     protected function getTransport($type = 'phar')
     {
-        if(isset($this->assets[$type])) {
+        if (isset($this->assets[$type])) {
             return $this->source->getTransport($this->assets[$type]);
         } else {
             return false;
