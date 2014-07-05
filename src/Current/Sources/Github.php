@@ -2,12 +2,12 @@
 
 namespace Current\Sources;
 
-use Current\Transports\Http;
-
-class Github
+class Github extends Supplied
 {
     protected $vendor;
     protected $project;
+
+    protected $releases;
 
     protected $gitHubUrl = 'https://github.com/';
 
@@ -19,10 +19,7 @@ class Github
 
         $project = substr($url, strlen($this->gitHubUrl));
         list($this->vendor, $this->project) = explode('/', $project);
-    }
 
-    public function getReleases()
-    {
         $apiUrl = $this->getProjectUrl(true);
         $projectUrl = $this->getProjectUrl(false);
 
@@ -81,12 +78,7 @@ class Github
             $manifest[] = $updateVersion;
         }
 
-        return $manifest;
-    }
-
-    public function getTransport($asset)
-    {
-        return new Http($asset);
+        $this->manifest = $manifest;
     }
 
     protected function getProjectUrl($api = false)
