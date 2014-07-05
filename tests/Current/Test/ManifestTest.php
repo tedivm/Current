@@ -16,7 +16,8 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
             'assets' => array(
                 array(
                     'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.3.4/FileName.phar'
+                    'path' => 'path/to/v1.3.4/FileName.phar',
+                    'type' => 'phar'
                 )
             ),
         ),
@@ -27,7 +28,8 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
             'assets' => array(
                 array(
                     'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.3.10/FileName.phar'
+                    'path' => 'path/to/v1.3.10/FileName.phar',
+                    'type' => 'phar'
                 )
             ),
         ),
@@ -38,7 +40,8 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
             'assets' => array(
                 array(
                     'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.4.10-beta/FileName.phar'
+                    'path' => 'path/to/v1.4.10-beta/FileName.phar',
+                    'type' => 'phar'
                 )
             ),
         ),
@@ -49,7 +52,8 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
             'assets' => array(
                 array(
                     'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.4.10/FileName.phar'
+                    'path' => 'path/to/v1.4.10/FileName.phar',
+                    'type' => 'phar'
                 )
             ),
         ),
@@ -60,7 +64,8 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
             'assets' => array(
                 array(
                     'name' => 'FileName.phar',
-                    'path' => 'path/to/v2.2.12/FileName.phar'
+                    'path' => 'path/to/v2.2.12/FileName.phar',
+                    'type' => 'phar'
                 )
             ),
         ),
@@ -107,27 +112,8 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
     public function testGetReleaseFromVersion()
     {
         $manifest = $this->testConstruct();
-
         $lastVersion = $manifest->getLatestVersion();
-/*
         $release = $manifest->getReleaseFromVersion($lastVersion);
-
-        $this->assertArrayHasKey('version', $release);
-        $this->assertEquals('v2.2.12', $release['version']);
-
-        $this->assertArrayHasKey('stable', $release);
-        $this->assertEquals(true, $release['stable']);
-
-        $this->assertArrayHasKey('assets', $release);
-
-        $asset = $release['assets'][0];
-
-        $this->assertArrayHasKey('name', $asset);
-        $this->assertEquals('FileName.phar', $asset['name']);
-
-        $this->assertArrayHasKey('path', $asset);
-        $this->assertEquals('path/to/v2.2.12/FileName.phar', $asset['path']);
-*/
-
+        $this->assertInstanceOf('Current\\Release', $release);
     }
 }
