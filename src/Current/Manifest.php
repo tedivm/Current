@@ -86,19 +86,19 @@ class Manifest
             return Update::MAJOR;
         }
 
-        $latest = $this->getLatestVersion(true)->getMajor();
-        if (Version::compare($latest, $version)) {
-            $availableUpdates = $availableUpdates & Update::MAJOR;
+        $latest = $this->getLatestVersion(true);
+        if (Version::compare($latest, $version) > 0) {
+            $availableUpdates = $availableUpdates | Update::MAJOR;
         }
 
-        $macro = $this->getReleaseFromVersion(true, $version->getMajor());
-        if (Version::compare($macro, $version)) {
-            $availableUpdates = $availableUpdates & Update::MINOR;
+        $macro = $this->getLatestVersion(true, $version->getMajor());
+        if ($macro && Version::compare($macro, $version) > 0) {
+            $availableUpdates = $availableUpdates | Update::MINOR;
         }
 
-        $micro = $this->getReleaseFromVersion(true, $version->getMajor(), $version->getMinor());
-        if (Version::compare($micro, $version)) {
-            $availableUpdates = $availableUpdates & Update::PATCH;
+        $micro = $this->getLatestVersion(true, $version->getMajor(), $version->getMinor());
+        if ($micro && Version::compare($micro, $version) > 0) {
+            $availableUpdates = $availableUpdates | Update::PATCH;
         }
 
         return $availableUpdates;
@@ -108,20 +108,28 @@ class Manifest
     {
         $versionProperty = $stable === true ? 'latestStable' : 'latestDevelopment';
 
-        if (!isset($major)) {
-            $latestMajor = end($this->$versionProperty);
-        } elseif (isset($this->{$versionProperty}[$major])) {
-            $latestMajor = $this->{$versionProperty}[$major];
-        } else {
-            return false;
-        }
+        $versionGroup = $this->{$versionProperty};
 
-        if (!isset($minor)) {
-            return end($latestMajor);
-        } elseif (isset($latestMajor[$minor])) {
-            return $latestMajor[$minor];
+        if (isset($major)) {
+
+            if (!isset($versionGroup[$major])) {
+                return false;
+            }
+
+            if (isset($minor)) {
+                if (!isset($versionGroup[$major][$minor])) {
+                    return false;
+                }
+
+                return $versionGroup[$major][$minor];
+            } else {
+                return end($versionGroup[$major]);
+            }
+
         } else {
-            return false;
+            $minorGroup = end($versionGroup);
+
+            return end($minorGroup);
         }
     }
 }

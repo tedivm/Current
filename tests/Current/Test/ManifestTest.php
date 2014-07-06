@@ -3,6 +3,7 @@
 namespace Current\Test;
 
 use Current\Manifest;
+use Current\Update;
 use Current\Version;
 
 class ManifestTest extends \PHPUnit_Framework_TestCase
@@ -115,5 +116,34 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         $lastVersion = $manifest->getLatestVersion();
         $release = $manifest->getReleaseFromVersion($lastVersion);
         $this->assertInstanceOf('Current\\Release', $release);
+    }
+
+    public function testGetAvailableUpdates()
+    {
+        $manifest = $this->testConstruct();
+
+
+        $availableUpdates = $manifest->getAvailableUpdates();
+        $this->assertTrue((bool) (Update::MAJOR & $availableUpdates));
+        $this->assertFalse((bool) (Update::MINOR & $availableUpdates));
+        $this->assertFalse((bool) (Update::PATCH & $availableUpdates));
+
+        $currentVersion = new Version('1.0.0');
+        $availableUpdates = $manifest->getAvailableUpdates($currentVersion);
+        $this->assertTrue((bool) (Update::MAJOR & $availableUpdates));
+        $this->assertTrue((bool) (Update::MINOR & $availableUpdates));
+        $this->assertFalse((bool) (Update::PATCH & $availableUpdates));
+
+        $currentVersion = new Version('1.3.0');
+        $availableUpdates = $manifest->getAvailableUpdates($currentVersion);
+        $this->assertTrue((bool) (Update::MAJOR & $availableUpdates));
+        $this->assertTrue((bool) (Update::MINOR & $availableUpdates));
+        $this->assertTrue((bool) (Update::PATCH & $availableUpdates));
+
+        $newVersion = new Version('3.0.0');
+        $availableUpdates = $manifest->getAvailableUpdates($newVersion);
+        $this->assertFalse((bool) (Update::MAJOR & $availableUpdates));
+        $this->assertFalse((bool) (Update::MINOR & $availableUpdates));
+        $this->assertFalse((bool) (Update::PATCH & $availableUpdates));
     }
 }
