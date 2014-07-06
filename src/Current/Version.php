@@ -84,12 +84,20 @@ class Version
         // $a == $b = 0
         // $a < $b = -1
 
-        if (!($a instanceof Version) || is_string($a)) {
-            $a = new Version($a);
+        if (!($a instanceof Version)) {
+            if (is_string($a)) {
+                $a = new Version($a);
+            } else {
+                throw new \RuntimeException('Compare Version requires Version or String, not ' . get_class($a));
+            }
         }
 
-        if (!($b instanceof Version) || is_string($b)) {
-            $b = new Version($b);
+        if (!($b instanceof Version)) {
+            if (is_string($b)) {
+                $b = new Version($b);
+            } else {
+                throw new \RuntimeException('Compare Version requires Version or String, not ' . get_class($b));
+            }
         }
 
         if (($a->getMajor()) !== $b->getMajor()) {
