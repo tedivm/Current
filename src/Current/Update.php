@@ -25,19 +25,27 @@ class Update
     const MINOR = 2;
     const PATCH = 4;
 
-    public static function buildFromUrl($url)
+    public static function buildFromResource($resource)
     {
+
         $className = static::$defaultSource;
-        foreach (self::$sources as $sourceUrl => $sourceClass) {
-            if (substr($url, 0, strlen($sourceUrl)) == $sourceUrl) {
-                $className = 'Current\\Sources\\' . $sourceClass;
-                break;
+
+        if (is_string($resource)) {
+
+            foreach (self::$sources as $sourceUrl => $sourceClass) {
+                if (substr($resource, 0, strlen($sourceUrl)) == $sourceUrl) {
+                    $className = 'Current\\Sources\\' . $sourceClass;
+                    break;
+                }
             }
+
+        } elseif (is_array($resource)) {
+            $className = 'Current\\Sources\\Supplied';
         }
 
         /** @var Source $source */
         $source = new $className();
-        $source->initialize($url);
+        $source->initialize($resource);
 
         $manifest = new Manifest($source);
 
