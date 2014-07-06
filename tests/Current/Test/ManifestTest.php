@@ -122,7 +122,6 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
     {
         $manifest = $this->testConstruct();
 
-
         $availableUpdates = $manifest->getAvailableUpdates();
         $this->assertTrue((bool) (Update::MAJOR & $availableUpdates));
         $this->assertFalse((bool) (Update::MINOR & $availableUpdates));
