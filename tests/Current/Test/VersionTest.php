@@ -20,6 +20,7 @@ class VersionTest extends \PHPUnit_Framework_TestCase
         'v1.0.0-rc.1',
         '1.0.0-rc.2',
         '1.0.0',
+        'v2.0.0-beta',
         'v2.0.0',
         '2.3.0',
         '2.3.1',

@@ -3,6 +3,7 @@
 namespace Current\Test;
 
 use Current\Manifest;
+use Current\Sources\Supplied;
 use Current\Update;
 use Current\Version;
 
@@ -60,6 +61,18 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         ),
 
         array(
+            'version' => 'v1.4.11-beta',
+            'stable' => true,
+            'assets' => array(
+                array(
+                    'name' => 'FileName.phar',
+                    'path' => 'path/to/v1.4.10/FileName.phar',
+                    'type' => 'phar'
+                )
+            ),
+        ),
+
+        array(
             'version' => 'v2.2.12',
             'stable' => true,
             'assets' => array(
@@ -75,12 +88,9 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
 
     public function testConstruct()
     {
-        $stub = $this->getMock('Current\Interfaces\Source');
-        $stub->expects($this->any())
-            ->method('getReleases')
-            ->will($this->returnValue($this->testManifest));
-
-        $manifest = new Manifest($stub);
+        $source = new Supplied();
+        $source->initialize($this->testManifest);
+        $manifest = new Manifest($source);
         $this->assertInstanceOf('Current\Manifest', $manifest);
 
         return $manifest;
@@ -100,6 +110,11 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Current\Version', $lastVersionOne);
         $lastVersionOneString = $lastVersionOne->getLongString();
         $this->assertEquals('v1.4.10', $lastVersionOneString);
+
+        $lastVersionOnePrerelease = $manifest->getLatestVersion(false, 1);
+        $this->assertInstanceOf('Current\Version', $lastVersionOnePrerelease);
+        $lastVersionOnePrereleaseString = $lastVersionOnePrerelease->getLongString();
+        $this->assertEquals('v1.4.11-beta', $lastVersionOnePrereleaseString);
 
         $lastVersionOne = $manifest->getLatestVersion(true, 1, 3);
         $this->assertInstanceOf('Current\Version', $lastVersionOne);
@@ -138,6 +153,14 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue((bool) (Update::MAJOR & $availableUpdates));
         $this->assertTrue((bool) (Update::MINOR & $availableUpdates));
         $this->assertTrue((bool) (Update::PATCH & $availableUpdates));
+
+        $currentVersion = new Version('1.4.10');
+        $availableUpdates = $manifest->getAvailableUpdates($currentVersion, true);
+        $this->assertTrue((bool) (Update::MINOR & $availableUpdates));
+
+        $currentVersion = new Version('2.2.10');
+        $availableUpdates = $manifest->getAvailableUpdates($currentVersion, true);
+        $this->assertTrue((bool) (Update::MINOR & $availableUpdates));
 
         $newVersion = new Version('3.0.0');
         $availableUpdates = $manifest->getAvailableUpdates($newVersion);
