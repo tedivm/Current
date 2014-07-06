@@ -3,94 +3,15 @@
 namespace Current\Test;
 
 use Current\Manifest;
-use Current\Sources\Supplied;
+use Current\Test\Sources\TestSource;
 use Current\Update;
 use Current\Version;
 
 class ManifestTest extends \PHPUnit_Framework_TestCase
 {
-
-    protected $testManifest = array(
-
-        array(
-            'version' => 'v1.3.4',
-            'stable' => true,
-            'assets' => array(
-                array(
-                    'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.3.4/FileName.phar',
-                    'type' => 'phar'
-                )
-            ),
-        ),
-
-        array(
-            'version' => 'v1.3.10',
-            'stable' => true,
-            'assets' => array(
-                array(
-                    'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.3.10/FileName.phar',
-                    'type' => 'phar'
-                )
-            ),
-        ),
-
-        array(
-            'version' => 'v1.4.10-beta',
-            'stable' => true,
-            'assets' => array(
-                array(
-                    'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.4.10-beta/FileName.phar',
-                    'type' => 'phar'
-                )
-            ),
-        ),
-
-        array(
-            'version' => 'v1.4.10',
-            'stable' => true,
-            'assets' => array(
-                array(
-                    'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.4.10/FileName.phar',
-                    'type' => 'phar'
-                )
-            ),
-        ),
-
-        array(
-            'version' => 'v1.4.11-beta',
-            'stable' => true,
-            'assets' => array(
-                array(
-                    'name' => 'FileName.phar',
-                    'path' => 'path/to/v1.4.10/FileName.phar',
-                    'type' => 'phar'
-                )
-            ),
-        ),
-
-        array(
-            'version' => 'v2.2.12',
-            'stable' => true,
-            'assets' => array(
-                array(
-                    'name' => 'FileName.phar',
-                    'path' => 'path/to/v2.2.12/FileName.phar',
-                    'type' => 'phar'
-                )
-            ),
-        ),
-
-    );
-
     public function testConstruct()
     {
-        $source = new Supplied();
-        $source->initialize($this->testManifest);
-        $manifest = new Manifest($source);
+        $manifest = new Manifest(new TestSource());
         $this->assertInstanceOf('Current\Manifest', $manifest);
 
         return $manifest;
@@ -122,7 +43,6 @@ class ManifestTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('v1.3.10', $lastVersionOneString);
 
         $this->assertFalse($manifest->getLatestVersion(true, 3));
-
     }
 
     public function testGetReleaseFromVersion()
