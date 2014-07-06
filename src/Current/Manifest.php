@@ -53,12 +53,11 @@ class Manifest
         if ($stableVersion === false) {
             return $developmentVersion;
         }
-
         if ($developmentVersion === false) {
             return $stableVersion;
         }
 
-        if (Version::compare($stableVersion, $developmentVersion)) {
+        if (Version::compare($stableVersion, $developmentVersion) > 0) {
             return $stableVersion;
         } else {
             return $developmentVersion;
@@ -74,8 +73,11 @@ class Manifest
         return new Release($this->releases[$version->getLongString()], $this->source);
     }
 
-    public function getAvailableUpdates($version = null)
+    public function getAvailableUpdates($version = null, $includePrerelease = false)
     {
+
+        $stability = !$includePrerelease;
+
         $availableUpdates = 0;
 
         if (!($version instanceof Version)) {
@@ -86,17 +88,17 @@ class Manifest
             return Update::MAJOR;
         }
 
-        $latest = $this->getLatestVersion(true);
+        $latest = $this->getLatestVersion($stability);
         if (Version::compare($latest, $version) > 0) {
             $availableUpdates = $availableUpdates | Update::MAJOR;
         }
 
-        $macro = $this->getLatestVersion(true, $version->getMajor());
+        $macro = $this->getLatestVersion($stability, $version->getMajor());
         if ($macro && Version::compare($macro, $version) > 0) {
             $availableUpdates = $availableUpdates | Update::MINOR;
         }
 
-        $micro = $this->getLatestVersion(true, $version->getMajor(), $version->getMinor());
+        $micro = $this->getLatestVersion($stability, $version->getMajor(), $version->getMinor());
         if ($micro && Version::compare($micro, $version) > 0) {
             $availableUpdates = $availableUpdates | Update::PATCH;
         }
