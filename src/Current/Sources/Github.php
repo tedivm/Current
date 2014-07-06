@@ -26,7 +26,7 @@ class Github extends Supplied
         $releasesJson = file_get_contents($apiUrl . '/releases');
         $releaseList = json_decode($releasesJson, true);
 
-        $manifest = array();
+        $processedReleases = array();
         foreach ($releaseList as $release) {
 
             // No assets, no point in continuing.
@@ -75,10 +75,10 @@ class Github extends Supplied
                 );
             }
 
-            $manifest[] = $updateVersion;
+            $processedReleases[] = $updateVersion;
         }
 
-        $this->manifest = $manifest;
+        $this->releases = $processedReleases;
     }
 
     protected function getProjectUrl($api = false)
