@@ -30,6 +30,8 @@ class ReleaseTest extends \PHPUnit_Framework_TestCase
         ),
     );
 
+    static $files = array();
+
     public function testConstruct($stable = true)
     {
         $testSource = new TestSource();
@@ -84,6 +86,19 @@ class ReleaseTest extends \PHPUnit_Framework_TestCase
 
     public function testSaveToTemp()
     {
+        $stableRelease = $this->testConstruct(true);
+        $tmpFile = $stableRelease->saveToTemp('phar');
+        static::$files[] = $tmpFile;
 
+        $this->assertFileExists($tmpFile);
+        $this->assertEquals('fa3841ac76b7356c01d50825ce9b1b7885b0adcb', sha1_file($tmpFile));
+    }
+
+    protected function tearDown()
+    {
+        foreach(static::$files as $file) {
+            unlink($file);
+        }
+        static::$files = array();
     }
 }

@@ -40,12 +40,15 @@ class Http implements Transport
 
         while (!feof($sourceHandle)) {
             $destination->fwrite(fread($sourceHandle, 8192));
-            if (isset($progressCallback)) {
+            if (isset($progress)) {
                 $progress->setFileProgress($destination->ftell(), $this->size);
             }
         }
-        $progress->setFileComplete();
+        if(isset($progress)) {
+            $progress->setFileComplete();
+        }
         fclose($sourceHandle);
+        return true;
     }
 
 }
