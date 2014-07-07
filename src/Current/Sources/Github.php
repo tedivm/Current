@@ -17,22 +17,19 @@ class Github extends Supplied
             throw new \RuntimeException('Requires github projects.');
         }
 
+        $url = rtrim($url, '/');
         $project = substr($url, strlen($this->gitHubUrl));
         list($this->vendor, $this->project) = explode('/', $project);
 
         $apiUrl = $this->getProjectUrl(true);
         $projectUrl = $this->getProjectUrl(false);
 
-        $releasesJson = file_get_contents($apiUrl . '/releases');
-        $releaseList = json_decode($releasesJson, true);
+        ini_set('user_agent', $project . ' updater using tedivm/current library.');
+        $releasesJson = file_get_contents($apiUrl . 'releases');
 
+        $releaseList = json_decode($releasesJson, true);
         $processedReleases = array();
         foreach ($releaseList as $release) {
-
-            // No assets, no point in continuing.
-            if (!isset($release['assets'])) {
-                continue;
-            }
 
             $updateVersion = array();
             $updateVersion['version'] = $release['tag_name'];
@@ -77,14 +74,13 @@ class Github extends Supplied
 
             $processedReleases[] = $updateVersion;
         }
-
         $this->releases = $processedReleases;
     }
 
     protected function getProjectUrl($api = false)
     {
         if ($api) {
-            $url = 'https://api.github.com/';
+            $url = 'https://api.github.com/repos/';
         } else {
             $url = 'https://github.com/';
         }
