@@ -24,8 +24,13 @@ class Github extends Supplied
         $apiUrl = $this->getProjectUrl(true);
         $projectUrl = $this->getProjectUrl(false);
 
-        ini_set('user_agent', $project . ' updater using tedivm/current library.');
-        $releasesJson = file_get_contents($apiUrl . 'releases');
+        $releasesJson = file_get_contents($apiUrl . 'releases', false, stream_context_create(array(
+            'http' => array(
+                'method' => 'GET',
+                'user_agent' => $project . ' updater using tedivm/current library.',
+                'timeout' => '2'
+            )
+        )));
 
         $releaseList = json_decode($releasesJson, true);
         $processedReleases = array();
