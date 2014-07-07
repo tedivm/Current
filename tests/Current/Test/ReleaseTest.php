@@ -96,7 +96,7 @@ class ReleaseTest extends \PHPUnit_Framework_TestCase
 
     protected function tearDown()
     {
-        foreach(static::$files as $file) {
+        foreach (static::$files as $file) {
             unlink($file);
         }
         static::$files = array();

@@ -44,10 +44,11 @@ class Http implements Transport
                 $progress->setFileProgress($destination->ftell(), $this->size);
             }
         }
-        if(isset($progress)) {
+        if (isset($progress)) {
             $progress->setFileComplete();
         }
         fclose($sourceHandle);
+
         return true;
     }
 
