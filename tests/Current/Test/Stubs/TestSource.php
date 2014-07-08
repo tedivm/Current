@@ -1,6 +1,6 @@
 <?php
 
-namespace Current\Test\Sources;
+namespace Current\Test\Stubs;
 
 use Current\Interfaces\Source;
 use Current\Transports\Http;

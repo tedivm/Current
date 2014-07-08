@@ -3,7 +3,7 @@
 namespace Current\Test;
 
 use Current\Manifest;
-use Current\Test\Sources\TestSource;
+use Current\Test\Stubs\TestSource;
 use Current\Update;
 use Current\Version;
 

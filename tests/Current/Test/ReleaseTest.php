@@ -3,7 +3,7 @@
 namespace Current\Test;
 
 use Current\Release;
-use Current\Test\Sources\TestSource;
+use Current\Test\Stubs\TestSource;
 
 class ReleaseTest extends \PHPUnit_Framework_TestCase
 {
