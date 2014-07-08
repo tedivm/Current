@@ -4,7 +4,8 @@ namespace Current\Test\Sources;
 
 abstract class AbstractSourceTest extends \PHPUnit_Framework_TestCase
 {
-    protected static $url = 'https://github.com/tedivm/Spark/';
+
+    protected $expectedTransport = '\\Current\\Transports\\Http';
 
     /**
      * @return \Current\Interfaces\Source
@@ -13,8 +14,8 @@ abstract class AbstractSourceTest extends \PHPUnit_Framework_TestCase
 
     public function testInitialize()
     {
-        $transport = $this->getSource();
-        $releases = $transport->getReleases();
+        $source = $this->getSource();
+        $releases = $source->getReleases();
 
         $this->assertGreaterThan(0, count($releases));
 
@@ -33,6 +34,14 @@ abstract class AbstractSourceTest extends \PHPUnit_Framework_TestCase
             }
 
         }
+    }
+
+    public function testGetTransport()
+    {
+        $source = $this->getSource();
+        $releases = $source->getReleases();
+        $transport = $source->getTransport($releases[0]['assets'][0]);
+        $this->assertInstanceOf($this->expectedTransport, $transport);
     }
 
 }

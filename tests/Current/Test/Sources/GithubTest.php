@@ -10,10 +10,9 @@ class GithubTest extends AbstractSourceTest
 
     public function getSource()
     {
-        $transport = new Github();
-        $transport->initialize(static::$url);
+        $source = new Github();
+        $source->initialize(static::$url);
 
-        return $transport;
-
+        return $source;
     }
 }

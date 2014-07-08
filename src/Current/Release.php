@@ -47,7 +47,7 @@ class Release
             mkdir($tmp);
         }
 
-        $file = tempnam($tmp, 'current-update');
+        $file = tempnam($tmp, 'current-update-');
 
         if ($transport->saveToFile($file, $progress)) {
             return $file;
