@@ -92,6 +92,22 @@ class ReleaseTest extends \PHPUnit_Framework_TestCase
 
         $this->assertFileExists($tmpFile);
         $this->assertEquals('fa3841ac76b7356c01d50825ce9b1b7885b0adcb', sha1_file($tmpFile));
+
+        $progress = $this->getMock('\\Current\\Interfaces\\Progress', array('setFileProgress', 'setFileComplete'));
+
+        $progress->expects($this->atLeastOnce())
+            ->method('setFileProgress')
+            ->with($this->greaterThanOrEqual(0));
+
+        $progress->expects($this->once())
+            ->method('setFileComplete');
+
+        $developmentRelease = $this->testConstruct(false);
+        $tmpFile = $developmentRelease->saveToTemp('phar', $progress);
+        static::$files[] = $tmpFile;
+
+        $this->assertFileExists($tmpFile);
+        $this->assertEquals('9af77837e7632e18fc4431ab4b0a71de5baf4165', sha1_file($tmpFile));
     }
 
     protected function tearDown()
