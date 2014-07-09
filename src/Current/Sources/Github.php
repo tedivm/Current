@@ -52,7 +52,7 @@ class Github extends Supplied
 
                 $updateVersion['assets'][] = array(
                     'name' => $asset['name'],
-                    'path' => $projectUrl . 'releases/download/' . $release['tag_name'] . '/' . $asset['name'],
+                    'path' => $asset['browser_download_url'],
                     'type' => $type,
                     'size' => $asset['size'],
                     'source' => false
