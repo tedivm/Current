@@ -2,6 +2,7 @@
 
 namespace Current;
 
+use Current\Interfaces\Progress;
 use Current\Interfaces\Source;
 
 class Update
@@ -18,21 +19,44 @@ class Update
 
     protected $applicationPath;
 
-    protected static $sources = array('https://github.com/' => 'Github');
-    protected static $defaultSource = '';
+    protected $type = 'phar';
+
+    protected $level;
+
+    protected $updateVersion;
+
+    /**
+     * @var Interfaces\Progress
+     */
+    protected $progress = null;
+
+    protected $sources = array('https://github.com/' => 'Github');
+    protected $defaultSource = 'Current\\Sources\\Web';
 
     const MAJOR = 1;
     const MINOR = 2;
     const PATCH = 4;
 
-    public static function buildFromResource($resource)
+    public function __construct(Source $source, $applicationPath = null, $level = Update::MAJOR)
     {
+        if (!is_object($source) || !($source instanceof Source)) {
+            $source = $this->makeSourceFromResource($source);
+        }
 
-        $className = static::$defaultSource;
+        $this->source = $source;
+        $this->manifest = new Manifest($source);
+        $this->applicationPath = !is_null($applicationPath) ? $applicationPath : realpath($_SERVER['argv'][0]);
+        $this->level = $level;
+
+    }
+
+    protected function makeSourceFromResource($resource)
+    {
+        $className = $this->defaultSource;
 
         if (is_string($resource)) {
 
-            foreach (self::$sources as $sourceUrl => $sourceClass) {
+            foreach ($this->sources as $sourceUrl => $sourceClass) {
                 if (substr($resource, 0, strlen($sourceUrl)) == $sourceUrl) {
                     $className = 'Current\\Sources\\' . $sourceClass;
                     break;
@@ -47,16 +71,7 @@ class Update
         $source = new $className();
         $source->initialize($resource);
 
-        $manifest = new Manifest($source);
-
-        return new self($manifest);
-    }
-
-    public function __construct(Manifest $manifest, $applicationPath = null)
-    {
-        $this->manifest = $manifest;
-        $this->applicationPath = !is_null($applicationPath) ? $applicationPath : realpath($_SERVER['argv'][0]);
-
+        return new self($source);
     }
 
     public function setCurrentVersion($version)
@@ -70,28 +85,77 @@ class Update
         }
     }
 
-    public function update($level = self::MAJOR)
+    public function setProgressMonitor(Progress $progress)
     {
-        if ($level | self::MAJOR) {
+        $this->progress = $progress;
+    }
+
+    public function getProgressMonitor()
+    {
+        if (isset($this->progress)) {
+            return $this->progress;
+        } else {
+            return false;
+        }
+    }
+
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
+
+    public function getUpdateVersion()
+    {
+        if (isset($this->updateVersion)) {
+            return $this->updateVersion;
+        }
+
+        $level = $this->level;
+        if ((bool) ($level & self::MAJOR)) {
             $updateVersion = $this->manifest->getLatestVersion(true);
-        } elseif ($level | self::MINOR) {
+        } elseif ((bool) ($level & self::MINOR)) {
             $updateVersion = $this->manifest->getLatestVersion(true, $this->currentVersion->getMajor());
         } else {
             $updateVersion = $this->manifest->getLatestVersion(true, $this->currentVersion->getMajor(), $this->currentVersion->getMinor());
         }
 
         if ($updateVersion === false) {
-            // There are no versions available with the requested limits.
-            return true;
+            $this->updateVersion = false;
+
+            return false;
         }
 
-        if (isset($this->currentVersion) && Version::compare($this->currentVersion, $updateVersion)) {
-            // nothing to do, this is the current version
-            return true;
+        if (!isset($this->currentVersion) && (bool) Version::compare($this->currentVersion, $updateVersion)) {
+            $this->updateVersion = false;
+
+            return false;
         }
 
+        $this->updateVersion = $updateVersion;
+
+        return $updateVersion;
+    }
+
+    public function isUpdateAvailable()
+    {
+        return $this->getUpdateVersion() !== false;
+    }
+
+    public function saveToTemp()
+    {
+        $updateVersion = $this->getUpdateVersion();
         $release = $this->manifest->getReleaseFromVersion($updateVersion);
-        $tmp = $release->saveToTemp();
+
+        return $release->saveToTemp($this->type, $this->progress);
+    }
+
+    public function update()
+    {
+        if (!$this->isUpdateAvailable()) {
+            return true;
+        }
+
+        $tmp = $this->saveToTemp();
 
         return rename($tmp, $this->applicationPath);
     }
